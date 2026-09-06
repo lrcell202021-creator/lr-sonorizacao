@@ -1,0 +1,26 @@
+# Cabeçalhos para hospedagem estática.
+# Se a plataforma não ler este arquivo, replique estas regras na configuração dela.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
+
+# O HTML precisa ser revalidado para as alterações aparecerem na hora.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# CSS e JS não têm hash no nome, então o cache é curto de propósito.
+/style.css
+  Cache-Control: public, max-age=3600
+
+/script.js
+  Cache-Control: public, max-age=3600
+
+# Imagens e ícones mudam raramente.
+/assets/*
+  Cache-Control: public, max-age=2592000
