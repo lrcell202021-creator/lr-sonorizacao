@@ -11,7 +11,10 @@
       "_headers",
       "README.txt",
       "*.zip",
-      "assets/fotos/luciano-original.jpg"
+      "assets/fotos/luciano-original.jpg",
+      "assets/fotos/sistema-original.jpg",
+      "assets/fotos/palco-original.jpg",
+      "assets/fotos/operacao-original.jpg"
     ],
     "cleanUrls": true,
     "headers": [

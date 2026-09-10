@@ -35,6 +35,29 @@ const DEFAULT_MESSAGE =
 
 const DRAFT_KEY = "lr-orcamento-rascunho";
 
+const SOLUTION_KITS = {
+  essencial: {
+    name: "01 | ESSENCIAL",
+    price: "R$ 350,00",
+    tipo: "Aniversário / Festa",
+  },
+  festa: {
+    name: "02 | FESTA",
+    price: "R$ 700,00",
+    tipo: "Aniversário / Festa",
+  },
+  corporativo: {
+    name: "03 | CORPORATIVO",
+    price: "R$ 300,00",
+    tipo: "Evento corporativo",
+  },
+  "festa-pronta": {
+    name: "04 | FESTA PRONTA",
+    price: "R$ 1.250,00",
+    tipo: "Aniversário / Festa",
+  },
+};
+
 function whatsappUrl(message) {
   const text = encodeURIComponent(message || "");
   return `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${text}`;
@@ -102,6 +125,72 @@ function initNav() {
   }
 }
 
+function getHeaderOffset() {
+  const header = document.getElementById("siteHeader");
+  return (header ? header.offsetHeight : 0) + 16;
+}
+
+function setHeaderOffsetVar() {
+  document.documentElement.style.setProperty(
+    "--header-offset",
+    `${getHeaderOffset()}px`
+  );
+}
+
+function resolveScrollTarget(target) {
+  if (!target) return target;
+  if (target.id === "orcamento") {
+    return target.querySelector(".eyebrow") || target;
+  }
+  return target;
+}
+
+function scrollToAnchorTarget(target, behavior = "auto") {
+  const scrollTarget = resolveScrollTarget(target);
+  if (!scrollTarget) return;
+  const top =
+    scrollTarget.getBoundingClientRect().top +
+    window.scrollY -
+    getHeaderOffset();
+  window.scrollTo({ top: Math.max(0, top), behavior });
+}
+
+function initAnchorScroll() {
+  setHeaderOffsetVar();
+
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest('a[href^="#"]');
+    if (!link) return;
+
+    const hash = link.getAttribute("href");
+    if (!hash || hash === "#") return;
+
+    const target = document.querySelector(hash);
+    if (!target) return;
+
+    event.preventDefault();
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    scrollToAnchorTarget(target, reduceMotion ? "auto" : "smooth");
+
+    if (window.history.pushState) {
+      window.history.pushState(null, "", hash);
+    }
+  });
+
+  const scrollInitialHash = () => {
+    const hash = window.location.hash;
+    if (!hash) return;
+    scrollToAnchorTarget(document.querySelector(hash), "auto");
+  };
+
+  scrollInitialHash();
+  window.addEventListener("load", scrollInitialHash, { once: true });
+}
+
 /* Marca o link da seção visível e liga a sombra do header depois do primeiro
    scroll. Tudo agrupado em um único listener com requestAnimationFrame. */
 function initScrollState() {
@@ -116,7 +205,8 @@ function initScrollState() {
     .filter((item) => item.section);
 
   const update = () => {
-    const offset = (header ? header.offsetHeight : 0) + 12;
+    setHeaderOffsetVar();
+    const offset = getHeaderOffset();
 
     if (header) {
       header.classList.toggle("is-scrolled", window.scrollY > 8);
@@ -577,6 +667,34 @@ function initQuoteForm() {
     }
   };
 
+  const applySolutionKit = () => {
+    const params = new URLSearchParams(window.location.search);
+    const kit = SOLUTION_KITS[params.get("kit") || ""];
+    if (!kit || !fields.mensagem) return;
+
+    fields.mensagem.value =
+      `Tenho interesse no kit ${kit.name} (a partir de ${kit.price}).\n` +
+      "Quero que a LR ajuste essa estrutura ao meu evento.";
+
+    if (kit.tipo && fields.tipo) {
+      const match = Array.from(fields.tipo.options).find(
+        (option) => option.value === kit.tipo
+      );
+      if (match) fields.tipo.value = kit.tipo;
+    }
+
+    saveDraft();
+
+    if (window.history.replaceState) {
+      window.history.replaceState(null, "", `${window.location.pathname}#orcamento`);
+    }
+
+    const orcamento = document.getElementById("orcamento");
+    if (orcamento) {
+      requestAnimationFrame(() => scrollToAnchorTarget(orcamento, "auto"));
+    }
+  };
+
   const restoreDraft = () => {
     try {
       const stored = window.localStorage.getItem(DRAFT_KEY);
@@ -609,6 +727,7 @@ function initQuoteForm() {
   };
 
   restoreDraft();
+  applySolutionKit();
   form.addEventListener("input", saveDraft);
   form.addEventListener("change", saveDraft);
 
@@ -667,6 +786,7 @@ function initScrollReveal() {
 function init() {
   initWhatsAppLinks();
   initNav();
+  initAnchorScroll();
   initScrollState();
   initBackToTop();
   initQuoteForm();

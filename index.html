@@ -13,23 +13,26 @@
   <meta property="og:type" content="website">
   <meta property="og:locale" content="pt_BR">
   <meta property="og:site_name" content="LR Sonorização">
-  <meta property="og:title" content="LR Sonorização | Seu evento. Seu som. Seu resultado.">
+  <meta property="og:title" content="LR Sonorização | Quando uma ideia encontra seu lugar, o evento acontece!">
   <meta property="og:description" content="Sonorização profissional para eventos, festas, casamentos, empresas e celebrações em Mogi Guaçu e região.">
   <meta property="og:image" content="/assets/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="LR Sonorização — sonorização profissional para eventos.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="LR Sonorização | Seu evento. Seu som. Seu resultado.">
+  <meta name="twitter:title" content="LR Sonorização | Quando uma ideia encontra seu lugar, o evento acontece!">
   <meta name="twitter:description" content="Sonorização profissional para eventos, festas, casamentos, empresas e celebrações em Mogi Guaçu e região.">
   <meta name="twitter:image" content="/assets/og-image.jpg">
 
-  <title>LR Sonorização | Seu evento. Seu som. Seu resultado.</title>
+  <title>LR Sonorização | Quando uma ideia encontra seu lugar, o evento acontece!</title>
   <link rel="icon" href="assets/favicon.ico" sizes="32x32">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="manifest" href="assets/site.webmanifest">
-  <link rel="stylesheet" href="style.css?v=aspas-barra">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..700&family=Noto+Sans:wght@400..600&display=swap">
+  <link rel="stylesheet" href="style.css?v=espacamento">
 
   <script type="application/ld+json">
   {
@@ -38,7 +41,7 @@
     "@id": "#business",
     "name": "LR Sonorização",
     "alternateName": "LR Som",
-    "slogan": "Seu evento. Seu som. Seu resultado.",
+    "slogan": "Quando uma ideia encontra seu lugar, o evento acontece!",
     "description": "Sonorização profissional para eventos, festas, casamentos, empresas e celebrações.",
     "image": "/assets/og-image.jpg",
     "areaServed": {
@@ -78,10 +81,7 @@
   <nav class="site-nav" aria-label="Navegação principal">
     <a class="brand" href="#inicio" aria-label="LR Sonorização, ir para o início">
       <img class="brand-mark" src="assets/logo-lr.svg" width="788" height="417" alt="" decoding="async">
-      <span>
-        <strong>LR SONORIZAÇÃO</strong>
-        <small>Quando uma idéia encontra o seu lugar,<br>o evento acontece!</small>
-      </span>
+      <span class="brand-word">Sonorização</span>
     </a>
 
     <ul class="nav-links" id="navLinks">
@@ -113,7 +113,7 @@
       </p>
       <div class="actions">
         <a class="button primary" href="#orcamento">Pedir orçamento</a>
-        <a class="button secondary" href="#lr">Conhecer a LR</a>
+        <a class="button secondary" href="#conhecer-lr">Conhecer a LR</a>
       </div>
     </div>
     <figure class="hero-image">
@@ -121,10 +121,10 @@
     </figure>
   </section>
 
-  <section class="statement">
+  <section id="conhecer-lr" class="statement">
     <div class="statement-image image-placeholder" hidden role="img" aria-label="Foto de equipamento" data-label="FOTO DE EQUIPAMENTO"></div>
     <div class="statement-copy">
-      <h2>Sonorização de qualidade não é só potência! É legibilidade dos detalhes, clareza das vozes e ambiência na medida certa.</h2>
+      <h2>Sonorização de qualidade não é só potência. É clareza, equilíbrio e definição.</h2>
     </div>
   </section>
 
@@ -187,9 +187,24 @@
   </section>
 
   <section class="section gallery">
-    <div class="gallery-image image-placeholder" role="img" aria-label="Foto do sistema" data-label="FOTO DO SISTEMA"></div>
-    <div class="gallery-image image-placeholder" role="img" aria-label="Foto do palco" data-label="FOTO DO PALCO"></div>
-    <div class="gallery-image image-placeholder" role="img" aria-label="Foto da operação" data-label="FOTO DA OPERAÇÃO"></div>
+    <figure class="gallery-image gallery-image--photo gallery-image--sistema">
+      <picture>
+        <source srcset="assets/fotos/sistema.webp" type="image/webp">
+        <img src="assets/fotos/sistema.jpg" width="880" height="660" alt="Sistema de sonorização da LR: caixas, subwoofers e cases de rack" loading="lazy" decoding="async">
+      </picture>
+    </figure>
+    <figure class="gallery-image gallery-image--photo gallery-image--palco">
+      <picture>
+        <source srcset="assets/fotos/palco.webp" type="image/webp">
+        <img src="assets/fotos/palco.jpg" width="819" height="988" alt="Palco montado com sistema de som, monitores e iluminação cênica" loading="lazy" decoding="async">
+      </picture>
+    </figure>
+    <figure class="gallery-image gallery-image--photo gallery-image--operacao">
+      <picture>
+        <source srcset="assets/fotos/operacao.webp" type="image/webp">
+        <img src="assets/fotos/operacao.jpg" width="819" height="1024" alt="Operação de som: técnico ajustando a mesa digital durante o evento" loading="lazy" decoding="async">
+      </picture>
+    </figure>
   </section>
 
   <section id="iluminacao" class="lighting">
@@ -273,6 +288,53 @@
         <strong>Rafael Andrey Rocha</strong>
         <span>Festa da Primavera</span>
       </article>
+    </div>
+  </section>
+
+  <section class="solutions-entry">
+    <div class="section solutions-entry-inner">
+      <div class="solutions-entry-copy">
+        <p class="eyebrow">SOLUÇÕES PRONTAS</p>
+        <h2>Estruturas prontas para facilitar sua escolha.</h2>
+        <p class="large-copy">
+          A LR ajusta cada solução ao seu evento.
+        </p>
+        <a class="button primary" href="solucoes-prontas.html">Ver soluções prontas</a>
+      </div>
+      <ol class="solutions-preview" aria-label="Pontos de partida">
+        <li>
+          <p class="solution-name">
+            <span class="number">01</span>
+            <span class="number-sep" aria-hidden="true">|</span>
+            ESSENCIAL
+          </p>
+          <p class="solution-price">A partir de R$&nbsp;350,00</p>
+        </li>
+        <li>
+          <p class="solution-name">
+            <span class="number">02</span>
+            <span class="number-sep" aria-hidden="true">|</span>
+            FESTA
+          </p>
+          <p class="solution-price">A partir de R$&nbsp;700,00</p>
+        </li>
+        <li>
+          <p class="solution-name">
+            <span class="number">03</span>
+            <span class="number-sep" aria-hidden="true">|</span>
+            CORPORATIVO
+          </p>
+          <p class="solution-price">A partir de R$&nbsp;300,00</p>
+        </li>
+        <li>
+          <p class="solution-name">
+            <span class="number">04</span>
+            <span class="number-sep" aria-hidden="true">|</span>
+            FESTA PRONTA
+          </p>
+          <p class="solution-price">A partir de R$&nbsp;1.250,00</p>
+        </li>
+      </ol>
     </div>
   </section>
 
@@ -388,10 +450,23 @@
 
 </main>
 
-<footer>
-  <strong>LR SONORIZAÇÃO</strong>
-  <a class="whatsapp-number" href="https://api.whatsapp.com/send?phone=5511915200199" target="_blank" rel="noopener noreferrer">(11) 91520-0199</a>
-  <span>Sonorização profissional para eventos.</span>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-statement">
+      <span class="footer-statement-fade">O seu momento termina.</span>
+      A experiência fica.
+    </p>
+
+    <div class="footer-signature">
+      <p class="footer-brand">LR SONORIZAÇÃO</p>
+      <p class="footer-tagline">Som bem planejado faz diferença.</p>
+    </div>
+
+    <div class="footer-meta">
+      <span>© 2026 LR Sonorização</span>
+      <span>Mogi Guaçu • SP</span>
+    </div>
+  </div>
 </footer>
 
 <a class="whatsapp-float" id="whatsappFloat" href="https://api.whatsapp.com/send?phone=5511915200199" target="_blank" rel="noopener noreferrer" aria-label="Falar com a LR Sonorização no WhatsApp">
@@ -413,6 +488,6 @@
   </div>
 </noscript>
 
-<script src="script.js?v=briefing-ok" defer></script>
+<script src="script.js?v=scroll-orcamento" defer></script>
 </body>
 </html>
