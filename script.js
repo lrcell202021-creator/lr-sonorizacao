@@ -37,22 +37,22 @@ const DRAFT_KEY = "lr-orcamento-rascunho";
 
 const SOLUTION_KITS = {
   essencial: {
-    name: "01 | ESSENCIAL",
+    name: "01 | EVENTO ESSENCIAL",
     price: "R$ 350,00",
     tipo: "Aniversário / Festa",
   },
   festa: {
-    name: "02 | FESTA",
+    name: "02 | FESTA NA MEDIDA",
     price: "R$ 700,00",
     tipo: "Aniversário / Festa",
   },
   corporativo: {
-    name: "03 | CORPORATIVO",
-    price: "R$ 300,00",
+    name: "03 | CORPORATIVO | RELIGIOSO",
+    price: "R$ 400,00",
     tipo: "Evento corporativo",
   },
   "festa-pronta": {
-    name: "04 | FESTA PRONTA",
+    name: "04 | FESTA PRA VALER",
     price: "R$ 1.250,00",
     tipo: "Aniversário / Festa",
   },

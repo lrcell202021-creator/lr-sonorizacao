@@ -697,7 +697,9 @@ h2 {
   gap: 8px;
 }
 
-.solution-kit03 .kit03-title-part {
+/* Mantém o separador colado no termo que vem depois dele, para que os dois
+   quebrem juntos em vez de a barra ficar sozinha no fim da linha. */
+.solution-name .title-part {
   display: inline-flex;
   align-items: baseline;
   gap: 8px;
@@ -1730,6 +1732,12 @@ h2 {
 
   .solutions-entry-inner,
   .solutions-list { grid-template-columns: 1fr; }
+
+  /* O nome do kit e o preço não quebram, então em telas estreitas a largura
+     mínima da linha estourava a coluna e o texto ficava cortado. */
+  .solutions-preview li { flex-wrap: wrap; }
+
+  .solutions-preview .solution-name { flex-wrap: wrap; }
 
   .solution { padding: 28px 22px 26px; }
 
