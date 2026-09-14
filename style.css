@@ -431,6 +431,15 @@ h2 {
   color: #bbb;
 }
 
+/* Preço de entrada logo abaixo do botão, no mesmo dourado claro que a faixa
+   escura já usa nos números e no identificador da seção. */
+.solutions-entry-hint {
+  margin: 16px 0 0;
+  color: #E8A33D;
+  font-size: 20px;
+  font-weight: 800;
+}
+
 .solutions-preview {
   margin: 0;
   padding: 0;
@@ -458,14 +467,6 @@ h2 {
   margin: 0;
   color: #E8A33D;
   font-size: 18px;
-}
-
-.solutions-preview .solution-price {
-  margin: 0;
-  color: #bbb;
-  font-size: 15px;
-  font-weight: 700;
-  white-space: nowrap;
 }
 
 .page-back-bar {
@@ -1733,11 +1734,12 @@ h2 {
   .solutions-entry-inner,
   .solutions-list { grid-template-columns: 1fr; }
 
-  /* O nome do kit e o preço não quebram, então em telas estreitas a largura
-     mínima da linha estourava a coluna e o texto ficava cortado. */
-  .solutions-preview li { flex-wrap: wrap; }
-
+  /* O nome do kit não quebra sozinho, então em telas estreitas a largura mínima
+     da linha estourava a coluna e o texto ficava cortado. */
   .solutions-preview .solution-name { flex-wrap: wrap; }
+
+  /* No corpo do desktop a frase quebraria em duas linhas na largura do celular. */
+  .solutions-entry-hint { font-size: 18px; }
 
   .solution { padding: 28px 22px 26px; }
 
