@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>LR Sonorização | Artes para redes sociais</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..700&display=swap">
+<style>
+/* Artes para stories (1080x1920). As cores, a tipografia e o logo são os
+   mesmos do site; qualquer mudança de identidade deve ser refletida aqui.
+
+   Uso: abrir com ?peca=1, ?peca=2 ou ?peca=3 para isolar uma peça na tela e
+   exportá-la. Sem parâmetro, as três aparecem empilhadas para conferência. */
+:root {
+  --gold: #D98A16;
+  --gold-light: #E8A33D;
+  --black: #171717;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #2b2b2b;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.peca {
+  position: relative;
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 45% at 12% 4%, rgba(217, 138, 22, .20), transparent 60%),
+    var(--black);
+  color: #fff;
+}
+
+body[data-peca] .peca { display: none; }
+body[data-peca="1"] #peca-1,
+body[data-peca="2"] #peca-2,
+body[data-peca="3"] #peca-3 { display: block; }
+
+/* Colunas internas: 96px de respiro lateral e 300px livres no rodapé, que é
+   onde a interface do Instagram cobre a arte. */
+.conteudo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0 96px 250px;
+}
+
+.logo { width: 268px; height: auto; }
+
+.eyebrow {
+  margin: 0 0 26px;
+  color: var(--gold-light);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 96px;
+  font-weight: 900;
+  line-height: .94;
+  letter-spacing: -4.5px;
+}
+
+.apoio {
+  margin: 34px 0 0;
+  max-width: 780px;
+  color: #c7c7c7;
+  font-size: 30px;
+  line-height: 1.5;
+}
+
+/* Assinatura: um filete dourado e o endereço do site, sempre na mesma altura
+   nas três peças para dar unidade à sequência de posts. */
+.assinatura {
+  margin-top: auto;
+  padding-top: 48px;
+  border-top: 3px solid rgba(255, 255, 255, .22);
+}
+
+.assinatura .site {
+  margin: 0;
+  color: var(--gold-light);
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -.5px;
+}
+
+.assinatura .cidade {
+  margin: 10px 0 0;
+  color: #9a9a9a;
+  font-size: 25px;
+  letter-spacing: 1px;
+}
+
+/* ---------- Peça 1: apresentação da marca ---------- */
+.foto-topo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1080px;
+  height: 780px;
+}
+
+.foto-topo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 42%;
+}
+
+/* A foto precisa morrer no preto do fundo para o texto começar sem costura. */
+.foto-topo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(23, 23, 23, .30) 0%, rgba(23, 23, 23, 0) 30%, rgba(23, 23, 23, .85) 78%, var(--black) 100%);
+}
+
+#peca-1 .conteudo { padding-top: 846px; }
+#peca-1 .logo { margin-bottom: 60px; }
+#peca-1 .titulo { max-width: 860px; }
+
+/* ---------- Peça 2: os pacotes ---------- */
+#peca-2 .conteudo { padding-top: 286px; }
+#peca-2 .logo { margin-bottom: 96px; }
+#peca-2 .titulo { font-size: 72px; letter-spacing: -3px; max-width: 820px; }
+
+.pacotes {
+  margin: 64px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 3px solid rgba(255, 255, 255, .22);
+}
+
+.pacotes li {
+  display: flex;
+  align-items: baseline;
+  gap: 22px;
+  padding: 30px 0;
+  border-bottom: 3px solid rgba(255, 255, 255, .22);
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: .5px;
+}
+
+.pacotes .num,
+.pacotes .sep { color: var(--gold-light); }
+
+.destaque {
+  margin: 60px 0 0;
+  color: var(--gold-light);
+  font-size: 52px;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+/* ---------- Peça 3: depoimento ---------- */
+#peca-3 .conteudo { padding-top: 330px; }
+#peca-3 .logo { margin-bottom: 96px; }
+
+.aspas {
+  margin: 0 0 -40px;
+  color: var(--gold);
+  font-size: 220px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.citacao {
+  margin: 0;
+  max-width: 860px;
+  font-size: 86px;
+  font-weight: 900;
+  line-height: 1.04;
+  letter-spacing: -3.5px;
+}
+
+.autor {
+  margin: 54px 0 0;
+  padding-left: 26px;
+  border-left: 5px solid var(--gold);
+}
+
+.autor strong {
+  display: block;
+  font-size: 34px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.autor span {
+  display: block;
+  margin-top: 8px;
+  color: #9a9a9a;
+  font-size: 27px;
+}
+</style>
+</head>
+<body>
+
+<!-- PEÇA 1 | APRESENTAÇÃO DA MARCA -->
+<section class="peca" id="peca-1">
+  <div class="foto-topo">
+    <img src="../assets/fotos/hero-evento.jpg" alt="">
+  </div>
+  <div class="conteudo">
+    <svg class="logo" viewBox="0 0 820 445" aria-hidden="true">
+      <path fill="#fff" d="M0 0L76 0L76 347L368 347L368 403L0 403Z"/>
+      <path fill="#fff" d="M344 4L557 4C560.67 4.5 572 5.67 579 7C586 8.33 592.33 9.83 599 12C605.67 14.17 612.33 16.67 619 20C625.67 23.33 632.33 26.67 639 32C645.67 37.33 654 46.33 659 52C664 57.67 666.33 61.67 669 66C671.67 70.33 673.33 74.33 675 78C676.67 81.67 677.83 84.67 679 88C680.17 91.33 681 93 682 98C683 103 684.5 111.33 685 118C685.5 124.67 685.33 131.33 685 138C684.67 144.67 684.33 151.33 683 158C681.67 164.67 679.17 172.17 677 178C674.83 183.83 672.17 188.83 670 193C667.83 197.17 666.33 199.67 664 203C661.67 206.33 659 209.67 656 213C653 216.33 649.83 219.67 646 223C642.17 226.33 638 229.67 633 233C628 236.33 622.17 239.67 616 243C609.83 246.33 602 248.83 596 253C590 257.17 582.67 265.5 580 268C582.33 270.5 589.5 278 594 283C598.5 288 602.67 293 607 298C611.33 303 615.5 308 620 313C624.5 318 629.17 323 634 328C638.83 333 643.5 338 649 343C654.5 348 660.67 353 667 358C673.33 363 679.67 368 687 373C694.33 378 701.17 383 711 388C720.83 393 733.17 399 746 403C758.83 407 781 410.5 788 412L769 417L714 417L680 414C673.83 412.17 654.33 407.33 643 403C631.67 398.67 620.83 393 612 388C603.17 383 596.5 378 590 373C583.5 368 578.33 363 573 358C567.67 353 562.67 348 558 343C553.33 338 549.17 333 545 328C540.83 323 537 318 533 313C529 308 525 303 521 298C517 293 513 288 509 283C505 278 501 273 497 268C493 263 488.33 257.17 485 253C481.67 248.83 479.67 246.33 477 243C474.33 239.67 471.67 236.33 469 233C466.33 229.67 463.67 225.83 461 223C458.33 220.17 454.33 217.17 453 216L453 204L545 204C552.67 202.17 580.33 197.33 591 193C601.67 188.67 604.17 183.83 609 178C613.83 172.17 617.33 164.67 620 158C622.67 151.33 624.67 144.67 625 138C625.33 131.33 623.67 124.67 622 118C620.33 111.33 617.5 103 615 98C612.5 93 610.17 91.33 607 88C603.83 84.67 600.5 81 596 78C591.5 75 585.17 72 580 70C574.83 68 568.83 67 565 66C561.17 65 558.33 64.33 557 64L344 64Z"/>
+      <path fill="#D98A16" d="M91 250L101 250L101 261L91 261ZM110 239L121 239L121 272L110 272ZM133 215L143 215L143 296L133 296ZM155 237L165 237L165 274L155 274ZM177 221L187 221L187 291L177 291ZM200 192L211 192L211 315L200 315ZM224 151L236 151L236 351L224 351ZM251 97L263 97L263 351L251 351ZM277 151L289 151L289 324L277 324ZM301 193L313 193L313 314L301 314ZM325 219L335 219L335 294L325 294ZM347 238L358 238L358 275L347 275ZM370 206L380 206L380 304L370 304ZM393 230L403 230L403 280L393 280ZM414 244L423 244L423 266L414 266Z"/>
+    </svg>
+    <p class="eyebrow">Sonorização profissional</p>
+    <h1 class="titulo">Seu evento merece um som à altura.</h1>
+    <p class="apoio">Estrutura, operação e cuidado com cada detalhe, para que tudo seja ouvido com clareza, presença e equilíbrio.</p>
+    <footer class="assinatura">
+      <p class="site">lr-sonorizacao.web.app</p>
+      <p class="cidade">Mogi Guaçu e região</p>
+    </footer>
+  </div>
+</section>
+
+<!-- PEÇA 2 | OS PACOTES PRONTOS -->
+<section class="peca" id="peca-2">
+  <div class="conteudo">
+    <svg class="logo" viewBox="0 0 820 445" aria-hidden="true">
+      <path fill="#fff" d="M0 0L76 0L76 347L368 347L368 403L0 403Z"/>
+      <path fill="#fff" d="M344 4L557 4C560.67 4.5 572 5.67 579 7C586 8.33 592.33 9.83 599 12C605.67 14.17 612.33 16.67 619 20C625.67 23.33 632.33 26.67 639 32C645.67 37.33 654 46.33 659 52C664 57.67 666.33 61.67 669 66C671.67 70.33 673.33 74.33 675 78C676.67 81.67 677.83 84.67 679 88C680.17 91.33 681 93 682 98C683 103 684.5 111.33 685 118C685.5 124.67 685.33 131.33 685 138C684.67 144.67 684.33 151.33 683 158C681.67 164.67 679.17 172.17 677 178C674.83 183.83 672.17 188.83 670 193C667.83 197.17 666.33 199.67 664 203C661.67 206.33 659 209.67 656 213C653 216.33 649.83 219.67 646 223C642.17 226.33 638 229.67 633 233C628 236.33 622.17 239.67 616 243C609.83 246.33 602 248.83 596 253C590 257.17 582.67 265.5 580 268C582.33 270.5 589.5 278 594 283C598.5 288 602.67 293 607 298C611.33 303 615.5 308 620 313C624.5 318 629.17 323 634 328C638.83 333 643.5 338 649 343C654.5 348 660.67 353 667 358C673.33 363 679.67 368 687 373C694.33 378 701.17 383 711 388C720.83 393 733.17 399 746 403C758.83 407 781 410.5 788 412L769 417L714 417L680 414C673.83 412.17 654.33 407.33 643 403C631.67 398.67 620.83 393 612 388C603.17 383 596.5 378 590 373C583.5 368 578.33 363 573 358C567.67 353 562.67 348 558 343C553.33 338 549.17 333 545 328C540.83 323 537 318 533 313C529 308 525 303 521 298C517 293 513 288 509 283C505 278 501 273 497 268C493 263 488.33 257.17 485 253C481.67 248.83 479.67 246.33 477 243C474.33 239.67 471.67 236.33 469 233C466.33 229.67 463.67 225.83 461 223C458.33 220.17 454.33 217.17 453 216L453 204L545 204C552.67 202.17 580.33 197.33 591 193C601.67 188.67 604.17 183.83 609 178C613.83 172.17 617.33 164.67 620 158C622.67 151.33 624.67 144.67 625 138C625.33 131.33 623.67 124.67 622 118C620.33 111.33 617.5 103 615 98C612.5 93 610.17 91.33 607 88C603.83 84.67 600.5 81 596 78C591.5 75 585.17 72 580 70C574.83 68 568.83 67 565 66C561.17 65 558.33 64.33 557 64L344 64Z"/>
+      <path fill="#D98A16" d="M91 250L101 250L101 261L91 261ZM110 239L121 239L121 272L110 272ZM133 215L143 215L143 296L133 296ZM155 237L165 237L165 274L155 274ZM177 221L187 221L187 291L177 291ZM200 192L211 192L211 315L200 315ZM224 151L236 151L236 351L224 351ZM251 97L263 97L263 351L251 351ZM277 151L289 151L289 324L277 324ZM301 193L313 193L313 314L301 314ZM325 219L335 219L335 294L325 294ZM347 238L358 238L358 275L347 275ZM370 206L380 206L380 304L370 304ZM393 230L403 230L403 280L393 280ZM414 244L423 244L423 266L414 266Z"/>
+    </svg>
+    <p class="eyebrow">Soluções prontas</p>
+    <h2 class="titulo">Estruturas prontas para facilitar sua escolha.</h2>
+    <ol class="pacotes">
+      <li><span class="num">01</span><span class="sep">|</span>EVENTO ESSENCIAL</li>
+      <li><span class="num">02</span><span class="sep">|</span>FESTA NA MEDIDA</li>
+      <li><span class="num">03</span><span class="sep">|</span>CORPORATIVO <span class="sep">|</span> RELIGIOSO</li>
+      <li><span class="num">04</span><span class="sep">|</span>FESTA PRA VALER</li>
+    </ol>
+    <p class="destaque">Pacotes a partir de R$&nbsp;350,00</p>
+    <footer class="assinatura">
+      <p class="site">lr-sonorizacao.web.app</p>
+      <p class="cidade">Veja o que vem em cada pacote</p>
+    </footer>
+  </div>
+</section>
+
+<!-- PEÇA 3 | DEPOIMENTO -->
+<section class="peca" id="peca-3">
+  <div class="conteudo">
+    <svg class="logo" viewBox="0 0 820 445" aria-hidden="true">
+      <path fill="#fff" d="M0 0L76 0L76 347L368 347L368 403L0 403Z"/>
+      <path fill="#fff" d="M344 4L557 4C560.67 4.5 572 5.67 579 7C586 8.33 592.33 9.83 599 12C605.67 14.17 612.33 16.67 619 20C625.67 23.33 632.33 26.67 639 32C645.67 37.33 654 46.33 659 52C664 57.67 666.33 61.67 669 66C671.67 70.33 673.33 74.33 675 78C676.67 81.67 677.83 84.67 679 88C680.17 91.33 681 93 682 98C683 103 684.5 111.33 685 118C685.5 124.67 685.33 131.33 685 138C684.67 144.67 684.33 151.33 683 158C681.67 164.67 679.17 172.17 677 178C674.83 183.83 672.17 188.83 670 193C667.83 197.17 666.33 199.67 664 203C661.67 206.33 659 209.67 656 213C653 216.33 649.83 219.67 646 223C642.17 226.33 638 229.67 633 233C628 236.33 622.17 239.67 616 243C609.83 246.33 602 248.83 596 253C590 257.17 582.67 265.5 580 268C582.33 270.5 589.5 278 594 283C598.5 288 602.67 293 607 298C611.33 303 615.5 308 620 313C624.5 318 629.17 323 634 328C638.83 333 643.5 338 649 343C654.5 348 660.67 353 667 358C673.33 363 679.67 368 687 373C694.33 378 701.17 383 711 388C720.83 393 733.17 399 746 403C758.83 407 781 410.5 788 412L769 417L714 417L680 414C673.83 412.17 654.33 407.33 643 403C631.67 398.67 620.83 393 612 388C603.17 383 596.5 378 590 373C583.5 368 578.33 363 573 358C567.67 353 562.67 348 558 343C553.33 338 549.17 333 545 328C540.83 323 537 318 533 313C529 308 525 303 521 298C517 293 513 288 509 283C505 278 501 273 497 268C493 263 488.33 257.17 485 253C481.67 248.83 479.67 246.33 477 243C474.33 239.67 471.67 236.33 469 233C466.33 229.67 463.67 225.83 461 223C458.33 220.17 454.33 217.17 453 216L453 204L545 204C552.67 202.17 580.33 197.33 591 193C601.67 188.67 604.17 183.83 609 178C613.83 172.17 617.33 164.67 620 158C622.67 151.33 624.67 144.67 625 138C625.33 131.33 623.67 124.67 622 118C620.33 111.33 617.5 103 615 98C612.5 93 610.17 91.33 607 88C603.83 84.67 600.5 81 596 78C591.5 75 585.17 72 580 70C574.83 68 568.83 67 565 66C561.17 65 558.33 64.33 557 64L344 64Z"/>
+      <path fill="#D98A16" d="M91 250L101 250L101 261L91 261ZM110 239L121 239L121 272L110 272ZM133 215L143 215L143 296L133 296ZM155 237L165 237L165 274L155 274ZM177 221L187 221L187 291L177 291ZM200 192L211 192L211 315L200 315ZM224 151L236 151L236 351L224 351ZM251 97L263 97L263 351L251 351ZM277 151L289 151L289 324L277 324ZM301 193L313 193L313 314L301 314ZM325 219L335 219L335 294L325 294ZM347 238L358 238L358 275L347 275ZM370 206L380 206L380 304L370 304ZM393 230L403 230L403 280L393 280ZM414 244L423 244L423 266L414 266Z"/>
+    </svg>
+    <p class="eyebrow">Quem já ouviu</p>
+    <p class="aspas" aria-hidden="true">“</p>
+    <blockquote class="citacao">A voz aparece sem competir com a música.</blockquote>
+    <p class="apoio">Um sistema bem dimensionado faz com que as pessoas entendam o que está sendo dito, mesmo quando o ambiente está cheio.</p>
+    <div class="autor">
+      <strong>André Felix</strong>
+      <span>Evento corporativo</span>
+    </div>
+    <footer class="assinatura">
+      <p class="site">lr-sonorizacao.web.app</p>
+      <p class="cidade">Mogi Guaçu e região</p>
+    </footer>
+  </div>
+</section>
+
+<script>
+  const peca = new URLSearchParams(location.search).get("peca");
+  if (peca) document.body.dataset.peca = peca;
+</script>
+</body>
+</html>

@@ -8,6 +8,7 @@
       "**/node_modules/**",
       "_verify/**",
       "tools/**",
+      "artes-redes/**",
       "_headers",
       "README.txt",
       "*.zip",

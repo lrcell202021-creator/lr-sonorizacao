@@ -22,3 +22,7 @@ ui-debug.log
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# Artes exportadas para redes sociais — material derivado, gerado a partir de
+# artes-redes/gerador.html sempre que for preciso
+artes-redes/*.png
