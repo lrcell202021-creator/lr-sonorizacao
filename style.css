@@ -1273,13 +1273,56 @@ h2 {
 .footer-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 28px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 28px;
   margin-top: 18px;
   padding-top: 12px;
   border-top: 1px solid rgba(255, 255, 255, .09);
   color: #8A8A8A;
   font-size: 13px;
   letter-spacing: .2px;
+}
+
+.footer-meta-copy {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+}
+
+.footer-social {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.footer-social a,
+.footer-social-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: #8A8A8A;
+  transition: color .2s ease, transform .2s ease;
+}
+
+.footer-social a:hover {
+  color: #E8A33D;
+  transform: translateY(-2px);
+}
+
+.footer-social-icon--pending {
+  opacity: .55;
+  cursor: default;
+}
+
+.footer-social svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
 }
 
 .quote-form {
@@ -1822,9 +1865,20 @@ h2 {
   .footer-signature { margin-top: 24px; }
   .footer-meta {
     flex-direction: column;
-    gap: 6px;
+    align-items: stretch;
+    gap: 14px;
     margin-top: 16px;
     padding-top: 12px;
+  }
+
+  .footer-meta-copy {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .footer-social {
+    margin-left: 0;
+    align-self: flex-end;
   }
 
   .nav-links { padding: 8px 18px 18px; }
