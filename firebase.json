@@ -5,6 +5,8 @@
       "firebase.json",
       ".firebaserc",
       "**/.*",
+      ".*/**",
+      "**/.*/**",
       "**/node_modules/**",
       "_verify/**",
       "tools/**",

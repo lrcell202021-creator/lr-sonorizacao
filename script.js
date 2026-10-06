@@ -945,6 +945,33 @@ function initSoundAssistant() {
   let resumeListenerAttached = false;
   let autoMinimizeTimer = 0;
   let panelCloseTimer = 0;
+  let audioBlobUrl = "";
+  let audioBlobRequested = false;
+
+  // O Firebase Hosting entrega o MP3 comprimido (br/gzip), e resposta
+  // comprimida nao aceita pedido por faixa de bytes. O Chrome do Android
+  // busca midia por faixas e para a trilha no meio. Baixar o arquivo inteiro
+  // e tocar de um blob local elimina os pedidos por faixa.
+  function prefetchAudio() {
+    if (audioBlobRequested || !window.fetch || !window.URL) return;
+    audioBlobRequested = true;
+    fetch(ASSISTANT_AUDIO_SRC)
+      .then((response) => (response.ok ? response.blob() : Promise.reject()))
+      .then((blob) => {
+        audioBlobUrl = URL.createObjectURL(blob);
+        useAudioBlob();
+      })
+      .catch(() => {
+        audioBlobRequested = false;
+      });
+  }
+
+  // Trocar a fonte reinicia a trilha: so troca parada no inicio ou no fim.
+  function useAudioBlob() {
+    if (!audioBlobUrl || audio.src === audioBlobUrl || !audio.paused) return;
+    if (audio.currentTime > 0 && !audio.ended) return;
+    audio.src = audioBlobUrl;
+  }
 
   const prefersReducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
@@ -983,6 +1010,7 @@ function initSoundAssistant() {
     toggle.setAttribute("aria-expanded", "true");
     root.classList.add("is-open");
     setMessage(isPlaying ? "playing" : audioReady ? null : "error");
+    prefetchAudio();
 
     if (prefersReducedMotion) {
       panel.classList.add("is-visible");
@@ -1025,6 +1053,7 @@ function initSoundAssistant() {
   function attachResumeOnInteraction() {
     if (resumeListenerAttached || assistantPref() !== "on") return;
     resumeListenerAttached = true;
+    prefetchAudio();
 
     const resume = () => {
       if (assistantPref() !== "on" || isPlaying || !audioReady) return;
@@ -1046,6 +1075,7 @@ function initSoundAssistant() {
     }
 
     try {
+      useAudioBlob();
       if (audio.ended || audio.currentTime >= (audio.duration || 0)) {
         audio.currentTime = 0;
       }
