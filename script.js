@@ -1,7 +1,10 @@
 /* LR Sonorização — interações do site.
    Configuração: WHATSAPP_NUMBER no formato internacional, só dígitos.
    CITIES: área de atendimento. Edite só este array para incluir ou remover
-   cidades. Qualquer localidade fora da lista é considerada não atendida. */
+   cidades. Qualquer localidade fora da lista é considerada não atendida.
+   SITE_URL: endereço canônico público (ver também site.config.json). */
+const SITE_URL = "https://lrsonorizacao.com.br";
+const SITE_HOST = "lrsonorizacao.com.br";
 const WHATSAPP_NUMBER = "5511915200199";
 
 const CITIES = [
@@ -750,6 +753,419 @@ function initQuoteForm() {
   });
 }
 
+// MP3, nao o WAV original: o WAV e 24 bits e alguns navegadores de celular o
+// tocam como 16 bits, o que vira ruido branco.
+const ASSISTANT_AUDIO_SRC = "assets/vinheta-lr.mp3?v=1";
+const ASSISTANT_VOLUME = 0.28;
+const ASSISTANT_PANEL_TRANSITION_MS = 320;
+const ASSISTANT_STORAGE = {
+  audio: "lr-assistant-audio",
+  dismissed: "lr-assistant-dismissed",
+};
+
+function assistantPref() {
+  try {
+    return localStorage.getItem(ASSISTANT_STORAGE.audio);
+  } catch {
+    return null;
+  }
+}
+
+function setAssistantPref(value) {
+  try {
+    if (value) localStorage.setItem(ASSISTANT_STORAGE.audio, value);
+    else localStorage.removeItem(ASSISTANT_STORAGE.audio);
+  } catch {
+    /* storage indisponível */
+  }
+}
+
+function isAssistantDismissed() {
+  try {
+    return localStorage.getItem(ASSISTANT_STORAGE.dismissed) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function setAssistantDismissed() {
+  try {
+    localStorage.setItem(ASSISTANT_STORAGE.dismissed, "1");
+  } catch {
+    /* storage indisponível */
+  }
+}
+
+function getAssistantMessage(state) {
+  if (state === "playing") {
+    return "Trilha ativa. Aproveite a navegação — estou por aqui se quiser pausar ou silenciar.";
+  }
+  if (state === "finished") {
+    return "Trilha finalizada. Se quiser ouvir novamente, toque em ouvir essa mensagem.";
+  }
+  if (state === "paused") {
+    return "Trilha pausada. Toque em retomar quando quiser continuar ouvindo.";
+  }
+  if (state === "error") {
+    return "A trilha ainda não está disponível neste momento. Você pode continuar navegando normalmente.";
+  }
+  if (isAssistantDismissed()) {
+    return "Posso ajudar com a trilha sonora ou atalhos do site. O que prefere?";
+  }
+
+  const path = (window.location.pathname || "").toLowerCase();
+  if (path.includes("solucoes-prontas")) {
+    return "Conheça nossos kits com uma trilha especial da LR Sonorização. Quer ativar o som?";
+  }
+  return "Olá! Sou o assistente da LR Sonorização. Quer ouvir o que preparamos enquanto conhece nossos serviços?";
+}
+
+const ASSISTANT_ORCAMENTO_MESSAGE =
+  "Preparando seu evento? Ative nossa trilha e navegue com a vibe LR.";
+
+function buildAssistantMarkup() {
+  const solutionsHref = (window.location.pathname || "")
+    .toLowerCase()
+    .includes("solucoes-prontas")
+    ? "index.html#orcamento"
+    : "solucoes-prontas.html";
+
+  return `
+    <div class="lr-assistant" id="lrAssistant">
+      <audio class="lr-assistant-audio" id="lrAssistantAudio" preload="metadata">
+        <source src="${ASSISTANT_AUDIO_SRC}" type="audio/mpeg">
+      </audio>
+
+      <div
+        class="lr-assistant-panel"
+        id="lrAssistantPanel"
+        role="dialog"
+        aria-modal="false"
+        aria-labelledby="lrAssistantTitle"
+        aria-hidden="true"
+        hidden
+      >
+        <div class="lr-assistant-header">
+          <div class="lr-assistant-avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M12 3a4 4 0 0 0-4 4v6a4 4 0 0 0 8 0V7a4 4 0 0 0-4-4zm-6 8a6 6 0 0 0 12 0h2a8 8 0 0 1-7 7.93V22h-2v-3.07A8 8 0 0 1 4 11h2z"/>
+            </svg>
+          </div>
+          <div class="lr-assistant-heading">
+            <p class="lr-assistant-title" id="lrAssistantTitle">Assistente LR</p>
+            <p class="lr-assistant-subtitle">Experiência sonora</p>
+          </div>
+          <button type="button" class="lr-assistant-close" id="lrAssistantClose" aria-label="Fechar assistente">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M6 6l12 12M18 6L6 18"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="lr-assistant-body">
+          <p class="lr-assistant-message" id="lrAssistantMessage"></p>
+
+          <div class="lr-assistant-actions">
+            <button type="button" class="lr-assistant-btn lr-assistant-btn--primary" id="lrAssistantPlay">
+              Ouvir essa mensagem
+            </button>
+            <button type="button" class="lr-assistant-btn" id="lrAssistantPause" hidden>
+              Pausar
+            </button>
+            <button type="button" class="lr-assistant-btn" id="lrAssistantMute" hidden>
+              Silenciar
+            </button>
+          </div>
+
+          <div class="lr-assistant-links">
+            <a href="${solutionsHref}" id="lrAssistantSolutions">Ver soluções</a>
+            <button type="button" class="lr-assistant-link-btn" id="lrAssistantWhatsApp">WhatsApp</button>
+          </div>
+
+          <button type="button" class="lr-assistant-dismiss" id="lrAssistantDismiss">
+            Não perguntar de novo
+          </button>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="lr-assistant-toggle"
+        id="lrAssistantToggle"
+        aria-label="Abrir assistente LR"
+        aria-controls="lrAssistantPanel"
+        aria-expanded="false"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 3a4 4 0 0 0-4 4v6a4 4 0 0 0 8 0V7a4 4 0 0 0-4-4zm-6 8a6 6 0 0 0 12 0h2a8 8 0 0 1-7 7.93V22h-2v-3.07A8 8 0 0 1 4 11h2z"/>
+        </svg>
+        <span class="lr-assistant-badge" id="lrAssistantBadge" hidden aria-hidden="true"></span>
+      </button>
+    </div>
+  `;
+}
+
+function initSoundAssistant() {
+  if (document.getElementById("lrAssistant")) return;
+
+  document.body.insertAdjacentHTML("beforeend", buildAssistantMarkup());
+
+  const root = document.getElementById("lrAssistant");
+  const panel = document.getElementById("lrAssistantPanel");
+  const toggle = document.getElementById("lrAssistantToggle");
+  const closeBtn = document.getElementById("lrAssistantClose");
+  const messageEl = document.getElementById("lrAssistantMessage");
+  const playBtn = document.getElementById("lrAssistantPlay");
+  const pauseBtn = document.getElementById("lrAssistantPause");
+  const muteBtn = document.getElementById("lrAssistantMute");
+  const dismissBtn = document.getElementById("lrAssistantDismiss");
+  const whatsappBtn = document.getElementById("lrAssistantWhatsApp");
+  const badge = document.getElementById("lrAssistantBadge");
+  const audio = document.getElementById("lrAssistantAudio");
+
+  if (
+    !root ||
+    !panel ||
+    !toggle ||
+    !messageEl ||
+    !playBtn ||
+    !pauseBtn ||
+    !muteBtn ||
+    !audio
+  ) {
+    return;
+  }
+
+  audio.volume = ASSISTANT_VOLUME;
+
+  let isOpen = false;
+  let isPlaying = false;
+  let isMuted = false;
+  let audioReady = true;
+  let resumeListenerAttached = false;
+  let autoMinimizeTimer = 0;
+  let panelCloseTimer = 0;
+
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  function setMessage(state) {
+    messageEl.textContent = getAssistantMessage(state);
+  }
+
+  function syncControls() {
+    playBtn.hidden = isPlaying;
+    pauseBtn.hidden = !isPlaying;
+    muteBtn.hidden = !isPlaying && !isMuted;
+
+    if (isPlaying) {
+      muteBtn.textContent = isMuted ? "Ativar som" : "Silenciar";
+      root.classList.add("is-playing");
+      badge.hidden = false;
+    } else {
+      root.classList.remove("is-playing");
+      badge.hidden = true;
+    }
+
+    if (isMuted) root.classList.add("is-muted");
+    else root.classList.remove("is-muted");
+  }
+
+  function openPanel() {
+    if (isOpen) return;
+
+    window.clearTimeout(panelCloseTimer);
+    isOpen = true;
+    panel.hidden = false;
+    panel.classList.remove("is-closing");
+    panel.setAttribute("aria-hidden", "false");
+    toggle.setAttribute("aria-expanded", "true");
+    root.classList.add("is-open");
+    setMessage(isPlaying ? "playing" : audioReady ? null : "error");
+
+    if (prefersReducedMotion) {
+      panel.classList.add("is-visible");
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        panel.classList.add("is-visible");
+      });
+    });
+  }
+
+  function closePanel() {
+    if (!isOpen) return;
+
+    isOpen = false;
+    panel.classList.remove("is-visible");
+    panel.classList.add("is-closing");
+    panel.setAttribute("aria-hidden", "true");
+    toggle.setAttribute("aria-expanded", "false");
+    root.classList.remove("is-open");
+
+    const transitionMs = prefersReducedMotion ? 0 : ASSISTANT_PANEL_TRANSITION_MS;
+
+    window.clearTimeout(panelCloseTimer);
+    panelCloseTimer = window.setTimeout(() => {
+      panel.classList.remove("is-closing");
+      panel.hidden = true;
+    }, transitionMs);
+  }
+
+  function scheduleAutoMinimize() {
+    window.clearTimeout(autoMinimizeTimer);
+    autoMinimizeTimer = window.setTimeout(() => {
+      if (isPlaying) closePanel();
+    }, 2600);
+  }
+
+  function attachResumeOnInteraction() {
+    if (resumeListenerAttached || assistantPref() !== "on") return;
+    resumeListenerAttached = true;
+
+    const resume = () => {
+      if (assistantPref() !== "on" || isPlaying || !audioReady) return;
+      playAudio().finally(() => {
+        document.removeEventListener("pointerdown", resume);
+        document.removeEventListener("keydown", resume);
+        resumeListenerAttached = false;
+      });
+    };
+
+    document.addEventListener("pointerdown", resume, { once: true });
+    document.addEventListener("keydown", resume, { once: true });
+  }
+
+  async function playAudio() {
+    if (!audioReady) {
+      setMessage("error");
+      return;
+    }
+
+    try {
+      if (audio.ended || audio.currentTime >= (audio.duration || 0)) {
+        audio.currentTime = 0;
+      }
+      audio.muted = isMuted;
+      await audio.play();
+      isPlaying = true;
+      setAssistantPref("on");
+      setMessage("playing");
+      syncControls();
+      scheduleAutoMinimize();
+    } catch {
+      setMessage(null);
+      attachResumeOnInteraction();
+    }
+  }
+
+  function pauseAudio() {
+    audio.pause();
+    isPlaying = false;
+    setAssistantPref("off");
+    setMessage("paused");
+    syncControls();
+  }
+
+  function toggleMute() {
+    isMuted = !isMuted;
+    audio.muted = isMuted;
+    syncControls();
+  }
+
+  toggle.addEventListener("click", () => {
+    if (isOpen) closePanel();
+    else openPanel();
+  });
+
+  closeBtn?.addEventListener("click", closePanel);
+
+  playBtn.addEventListener("click", () => {
+    playAudio();
+  });
+
+  pauseBtn.addEventListener("click", pauseAudio);
+  muteBtn.addEventListener("click", toggleMute);
+
+  dismissBtn?.addEventListener("click", () => {
+    setAssistantDismissed();
+    pauseAudio();
+    root.classList.remove("is-attention");
+    closePanel();
+    setMessage(null);
+  });
+
+  whatsappBtn?.addEventListener("click", () => {
+    openWhatsApp(DEFAULT_MESSAGE);
+  });
+
+  audio.addEventListener("ended", () => {
+    isPlaying = false;
+    isMuted = false;
+    audio.muted = false;
+    setAssistantPref("off");
+    setMessage("finished");
+    syncControls();
+  });
+
+  audio.addEventListener("error", () => {
+    audioReady = false;
+    playBtn.disabled = true;
+    pauseBtn.hidden = true;
+    muteBtn.hidden = true;
+    setMessage("error");
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && isOpen) closePanel();
+  });
+
+  document.addEventListener("pointerdown", (event) => {
+    if (!isOpen) return;
+    if (root.contains(event.target)) return;
+    closePanel();
+  });
+
+  const orcamento = document.getElementById("orcamento");
+  if (orcamento && "IntersectionObserver" in window) {
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (isPlaying) return;
+          if (!isOpen) return;
+          if (entry.isIntersecting) {
+            messageEl.textContent = ASSISTANT_ORCAMENTO_MESSAGE;
+          } else {
+            setMessage(null);
+          }
+        });
+      },
+      { threshold: 0.35 }
+    );
+    sectionObserver.observe(orcamento);
+  }
+
+  syncControls();
+  setMessage(null);
+
+  if (assistantPref() === "on" && audioReady) {
+    attachResumeOnInteraction();
+    root.classList.add("is-ready");
+  } else if (!isAssistantDismissed() && assistantPref() !== "off") {
+    root.classList.add("is-attention");
+    if (!prefersReducedMotion) {
+      window.setTimeout(() => {
+        if (!isOpen) openPanel();
+      }, 1800);
+    } else {
+      openPanel();
+    }
+  }
+}
+
 function initScrollReveal() {
   const targets = document.querySelectorAll(
     ".service, .testimonial, .equipment-grid div, .cable-levels > div, .lighting-scenes article, .quote-grid .field"
@@ -792,6 +1208,7 @@ function init() {
   initQuoteForm();
   initLightingQuoteHint();
   initScrollReveal();
+  initSoundAssistant();
 }
 
 if (document.readyState === "loading") {

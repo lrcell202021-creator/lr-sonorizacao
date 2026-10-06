@@ -5,7 +5,7 @@
 #
 # Requer: pillow, numpy, scipy  (python -m pip install pillow numpy scipy)
 #
-# Entrada:  assets/fotos/luciano-original.jpg
+# Entrada:  assets/fotos/luciano_nova.png
 # Saidas:   assets/fotos/luciano.png   (fundo transparente, sem perdas)
 #           assets/fotos/luciano.webp  (mesma imagem, menor, usada no site)
 #
@@ -28,13 +28,13 @@ from PIL import Image
 from scipy import ndimage
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / "assets" / "fotos" / "luciano-original.jpg"
+SRC = ROOT / "assets" / "fotos" / "luciano_nova.png"
 OUT_PNG = ROOT / "assets" / "fotos" / "luciano.png"
 OUT_WEBP = ROOT / "assets" / "fotos" / "luciano.webp"
 
-# Largura final. O recorte nativo tem ~640px; 900 cobre tela 2x (max 470px no
-# CSS). O unsharp no tamanho final recupera a borda que o Lanczos amacia.
-TARGET_WIDTH = 900
+# Largura final: 940 cobre tela 2x (max 470px no CSS). A foto atual tem
+# ~1150px, entao so reduz; o realce leve no fim devolve a borda do Lanczos.
+TARGET_WIDTH = 940
 
 # Limites da mascara grosseira no fundo cinza (ver comentario do topo).
 COARSE_CHROMA = 14.0
@@ -53,9 +53,18 @@ DIST_HI_BLACK = 18.0
 ALPHA_SHRINK = 0.16
 ALPHA_SHRINK_BLACK = 0.08
 
-# Altura (fracao) da dissolvencia no rodape, para o corte na cintura nao virar
-# uma linha reta sobre o fundo claro da pagina.
-FADE_BOTTOM = 0.17
+# Dissolvencias nas bordas do corte (fracao da altura/largura). Zeradas: o
+# retrato termina em corte reto e a profundidade vem da sombra no CSS
+# (.about-portrait img). Se voltar a usar, o logo da camiseta termina em ~90%
+# da altura e ~81% da largura do recorte e nao pode desbotar.
+FADE_BOTTOM = 0.0
+FADE_BOTTOM_LONG = 0.0
+FADE_BOTTOM_LONG_DEPTH = 0.35
+FADE_SIDES = 0.0
+# Corta o rodape da foto antes do recorte: os antebracos aparecem so nos
+# cantos de baixo (a partir de ~89% da altura) e virariam pontas soltas de
+# pele no corte reto. O logo termina em ~83%.
+CROP_BOTTOM = 0.115
 
 POLY_DEGREE = 5
 
@@ -139,10 +148,24 @@ def build_alpha(rgb, model, dist_lo, dist_hi, shrink):
     alpha = np.clip((alpha - shrink) / (1.0 - shrink), 0.0, 1.0)
     alpha = ndimage.gaussian_filter(alpha, 0.85)
 
+    # Smoothstep: entra e sai da dissolvencia sem degrau visivel.
+    def ease(n):
+        t = np.linspace(0.0, 1.0, n)
+        return t * t * (3.0 - 2.0 * t)
+
+    fade = int(h * FADE_BOTTOM_LONG)
+    if fade > 0:
+        alpha[h - fade:, :] *= (1.0 - FADE_BOTTOM_LONG_DEPTH * ease(fade))[:, None]
+
     fade = int(h * FADE_BOTTOM)
     if fade > 0:
-        ramp = np.linspace(1.0, 0.0, fade) ** 1.7
-        alpha[h - fade:, :] *= ramp[:, None]
+        alpha[h - fade:, :] *= ease(fade)[::-1, None]
+
+    side = int(w * FADE_SIDES)
+    if side > 0:
+        ramp = ease(side)
+        alpha[:, :side] *= ramp[None, :]
+        alpha[:, w - side:] *= ramp[::-1][None, :]
     return alpha
 
 
@@ -241,6 +264,7 @@ def recover_resize(rgba):
 
 def main():
     rgb = np.asarray(Image.open(SRC).convert("RGB"), dtype=np.float64)
+    rgb = rgb[: round(rgb.shape[0] * (1.0 - CROP_BOTTOM))]
     h, w, _ = rgb.shape
     black_studio = is_black_studio(rgb)
     if black_studio:

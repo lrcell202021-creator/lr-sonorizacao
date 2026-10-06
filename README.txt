@@ -45,16 +45,16 @@ O QUE ENTROU NA 2.3
 
 LOGOTIPO NO CABEÇALHO
    - O quadrado dourado com as letras "LR" saiu. No lugar dele entrou o
-     logotipo da LR (o "L", o waveform e o "R"), vetorizado em SVG.
+     logotipo da LR (só as letras "L" e "R"), vetorizado em SVG. O waveform
+     do logotipo original foi retirado.
    - O SVG foi desenhado a partir de medições feitas pixel a pixel no logotipo
      original (tools/logo-lr-original.png), então o desenho e as proporções são
-     os do logotipo: 15 barras de waveform nas alturas originais, o "L" com a
-     haste e o pé nas medidas originais e o "R" aberto à esquerda, com o
-     waveform ocupando o lugar da haste, como no original.
-   - Cores adaptadas ao site, mantendo o dourado como destaque:
-       * no cabeçalho (fundo claro): "L" e "R" em #171717, waveform em #D98A16;
+     os do logotipo: o "L" com a haste e o pé nas medidas originais e o "R"
+     aberto à esquerda, como no original.
+   - Cores adaptadas ao site:
+       * no cabeçalho (fundo claro): "L" e "R" em #171717;
        * nos ícones e na imagem social (fundo escuro, como o logotipo
-         original): "L" e "R" em branco, waveform em #D98A16.
+         original): "L" e "R" em branco.
    - O relevo metálico do arquivo original não foi copiado traço a traço. Em
      vez disso o SVG ganhou uma sombra bem suave (feDropShadow, luz vinda de
      cima-esquerda) para dar um pouco de volume sem pesar no cabeçalho. O

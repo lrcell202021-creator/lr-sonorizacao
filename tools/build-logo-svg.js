@@ -12,7 +12,6 @@ const fs = require("fs");
 const path = require("path");
 
 const COLORS = {
-  gold: "#D98A16",
   black: "#171717",
   white: "#FFFFFF",
 };
@@ -22,30 +21,9 @@ const COLORS = {
 // "L": haste vertical + pé horizontal, um único polígono.
 const L = { x0: 21, x1: 97, top: 22, footTop: 369, footRight: 389, bottom: 425 };
 
-// Waveform: 15 barras. As barras 6 e 7 descem até dentro do pé do "L", como no
-// original, por isso o "bottom" delas passa de footTop.
-const BARS = [
-  { x0: 112, x1: 121, top: 272, bottom: 282 },
-  { x0: 131, x1: 141, top: 261, bottom: 293 },
-  { x0: 154, x1: 163, top: 237, bottom: 317 },
-  { x0: 176, x1: 185, top: 259, bottom: 295 },
-  { x0: 198, x1: 207, top: 243, bottom: 312 },
-  { x0: 221, x1: 231, top: 214, bottom: 336 },
-  { x0: 245, x1: 256, top: 173, bottom: 372 },
-  { x0: 272, x1: 283, top: 119, bottom: 372 },
-  { x0: 298, x1: 309, top: 173, bottom: 345 },
-  { x0: 322, x1: 333, top: 215, bottom: 335 },
-  { x0: 346, x1: 355, top: 241, bottom: 315 },
-  { x0: 368, x1: 378, top: 260, bottom: 296 },
-  { x0: 391, x1: 400, top: 228, bottom: 325 },
-  { x0: 414, x1: 423, top: 252, bottom: 301 },
-  { x0: 435, x1: 443, top: 266, bottom: 287 },
-];
-
 /* "R": contorno único, no sentido horário a partir do canto superior esquerdo.
    Cada trecho é uma reta ("line") ou uma curva suave ("curve") interpolada
-   pelos pontos medidos. O "R" é aberto à esquerda no original — o waveform
-   ocupa o lugar da haste. */
+   pelos pontos medidos. O "R" é aberto à esquerda, como no original. */
 const R_SEGMENTS = [
   { type: "line", pts: [[365, 26], [578, 26]] },
   {
@@ -132,21 +110,11 @@ function buildLPath(map) {
   return "M" + pts.map((q) => `${num(q[0])} ${num(q[1])}`).join("L") + "Z";
 }
 
-// Só M/L/C/Z são usados em todo o arquivo, para o gerador de ícones
-// (tools/generate-assets.ps1) poder reaproveitar estes mesmos paths.
-function buildBarsPath(map) {
-  return BARS.map((b) => {
-    const [x0, y0] = map([b.x0, b.top]);
-    const [x1, y1] = map([b.x1 + 1, b.bottom + 1]);
-    return `M${num(x0)} ${num(y0)}L${num(x1)} ${num(y0)}L${num(x1)} ${num(y1)}L${num(x0)} ${num(y1)}Z`;
-  }).join("");
-}
-
 // ------------------------------------------------------------------- saídas
 
 const outDir = path.join(__dirname, "..", "assets");
 
-// 1) Logotipo para o cabeçalho (fundo claro): letras escuras, waveform dourado.
+// 1) Logotipo para o cabeçalho (fundo claro): só as letras "LR", sem waveform.
 // A sombra 3D vive no SVG (feDropShadow). O viewBox ganha uma margem só para
 // a sombra não ser cortada; o desenho em si não muda de proporção.
 {
@@ -164,7 +132,6 @@ const outDir = path.join(__dirname, "..", "assets");
   <g transform="translate(${pad.l} ${pad.t})" filter="url(#soft-3d)">
     <path fill="${COLORS.black}" d="${buildLPath(map)}"/>
     <path fill="${COLORS.black}" d="${buildRPath(map)}"/>
-    <path fill="${COLORS.gold}" d="${buildBarsPath(map)}"/>
   </g>
 </svg>
 `;
@@ -185,7 +152,6 @@ const outDir = path.join(__dirname, "..", "assets");
   <rect width="${size}" height="${size}" fill="${COLORS.black}"/>
   <path fill="${COLORS.white}" d="${buildLPath(map)}"/>
   <path fill="${COLORS.white}" d="${buildRPath(map)}"/>
-  <path fill="${COLORS.gold}" d="${buildBarsPath(map)}"/>
 </svg>
 `;
   fs.writeFileSync(path.join(outDir, "favicon.svg"), svg, "utf8");

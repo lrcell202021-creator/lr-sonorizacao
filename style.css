@@ -306,12 +306,52 @@ h2 {
   display: inline-block;
   padding: 17px 28px;
   border: 1px solid var(--black);
+  border-radius: 10px;
   font-size: 17px;
   font-weight: 800;
 }
 
 .button.primary { border-color: var(--gold); }
 .button.secondary { background: transparent; }
+
+/* Botão com título e subtítulo: o padding vertical menor compensa a segunda
+   linha, para ele ficar da mesma altura dos botões de uma linha ao lado. */
+.button-stacked {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  line-height: 1.15;
+}
+
+.button-sub {
+  align-self: flex-end;
+  color: var(--gold-dark);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.button-arrow {
+  display: inline-block;
+  transition: transform .2s ease;
+}
+
+.button-stacked:hover .button-arrow { transform: translateX(4px); }
+
+.button.button-solutions {
+  border-color: var(--gold);
+  background: var(--white);
+  color: var(--black);
+}
+
+.button.button-solutions:hover { background: rgba(217, 138, 22, .10); }
+
+.button-solutions .button-arrow,
+.button-solutions .button-sub { color: var(--gold-dark); }
 
 .button, .header-whatsapp {
   transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease, color .2s ease;
@@ -682,7 +722,6 @@ h2 {
 .solutions-list .solution .button {
   align-self: flex-start;
   margin-top: auto;
-  border-radius: 999px;
   border-color: var(--gold);
   background: var(--gold);
   color: var(--white);
@@ -1026,28 +1065,15 @@ h2 {
 }
 
 /* O retrato é um recorte com fundo transparente (gerado por
-   tools/build-photo-luciano.py) e já sai da base dissolvendo. Em vez da moldura
-   quadrada dos demais blocos, ele flutua sobre um halo dourado bem diluído: a
-   foto encosta no papel da página sem nenhuma borda dura. */
+   tools/build-photo-luciano.py), sem moldura nem luz de fundo. O corte é reto;
+   a sombra que acompanha o contorno e cai para baixo descola a foto do papel. */
 .about-portrait {
   position: relative;
   display: flex;
   justify-content: center;
+  align-items: center;
   margin: 0;
   min-height: 600px;
-}
-
-.about-portrait::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  inset: 6% -4% 8%;
-  border-radius: 50%;
-  background: radial-gradient(
-    58% 52% at 50% 40%,
-    rgba(217, 138, 22, .24),
-    rgba(217, 138, 22, .10) 46%,
-    rgba(217, 138, 22, 0) 72%);
 }
 
 .about-portrait img {
@@ -1057,6 +1083,7 @@ h2 {
   width: 100%;
   max-width: 470px;
   height: auto;
+  filter: drop-shadow(0 22px 22px rgba(0, 0, 0, .22));
 }
 
 .about-copy h2 {
@@ -1153,14 +1180,22 @@ h2 {
   text-align: center;
 }
 
-.testimonial-photo {
-  display: block;
+.testimonial-avatar {
+  display: grid;
+  place-items: center;
   width: 112px;
   height: 112px;
   margin: 0 auto 20px;
-  object-fit: cover;
-  object-position: center 18%;
   border-radius: 50%;
+  background: rgba(217, 138, 22, .1);
+  border: 2px solid rgba(217, 138, 22, .24);
+}
+
+.testimonial-frequency {
+  display: block;
+  width: 52px;
+  height: 52px;
+  fill: var(--gold);
 }
 
 .testimonial blockquote {
@@ -1360,6 +1395,7 @@ h2 {
   width: 100%;
   padding: 15px 16px;
   border: 2px solid rgba(255, 255, 255, .65);
+  border-radius: 10px;
   background: var(--white);
   color: var(--black);
   font-family: inherit;
@@ -1430,6 +1466,7 @@ h2 {
   margin: 0;
   padding: 0;
   border: 0;
+  border-radius: 0;
   accent-color: var(--black);
 }
 
@@ -1508,7 +1545,7 @@ h2 {
   left: 0;
   right: 0;
   top: 100%;
-  margin: 0;
+  margin: 6px 0 0;
   padding: 0;
   list-style: none;
   max-height: 220px;
@@ -1516,6 +1553,7 @@ h2 {
   background: #FFFFFF;
   color: var(--black);
   border: 2px solid #FFFFFF;
+  border-radius: 10px;
   box-shadow: 0 10px 24px rgba(23, 23, 23, .18);
 }
 
@@ -1647,6 +1685,290 @@ h2 {
   visibility: visible;
 }
 
+.lr-assistant {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 79;
+  font-family: "Manrope", Arial, Helvetica, sans-serif;
+}
+
+.lr-assistant-audio {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lr-assistant-toggle {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  padding: 0;
+  border: 0;
+  border-radius: 20%;
+  background: var(--black);
+  color: var(--white);
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(23, 23, 23, .22);
+  transition: transform .2s ease, background .2s ease, opacity .35s ease, box-shadow .35s ease;
+}
+
+.lr-assistant-toggle svg {
+  width: 30px;
+  height: 30px;
+  fill: currentColor;
+}
+
+.lr-assistant-toggle:hover {
+  transform: translateY(-3px);
+  background: #222;
+}
+
+.lr-assistant.is-attention .lr-assistant-toggle {
+  animation: lr-assistant-pulse 2s ease-in-out infinite;
+}
+
+/* Com a trilha ativa, o botão fica discreto para não competir com o conteúdo. */
+.lr-assistant.is-playing:not(.is-open) .lr-assistant-toggle {
+  opacity: .38;
+  background: rgba(23, 23, 23, .72);
+  box-shadow: 0 4px 10px rgba(23, 23, 23, .1);
+}
+
+.lr-assistant.is-playing:not(.is-open) .lr-assistant-toggle:hover,
+.lr-assistant.is-playing:not(.is-open) .lr-assistant-toggle:focus-visible {
+  opacity: .92;
+  background: var(--gold);
+  box-shadow: 0 8px 18px rgba(23, 23, 23, .22);
+}
+
+.lr-assistant.is-playing.is-open .lr-assistant-toggle {
+  opacity: 1;
+  background: var(--gold);
+  color: var(--white);
+}
+
+.lr-assistant-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #4ade80;
+  border: 2px solid var(--black);
+}
+
+.lr-assistant.is-playing .lr-assistant-badge {
+  border-color: var(--gold);
+}
+
+.lr-assistant.is-playing:not(.is-open) .lr-assistant-badge {
+  opacity: .85;
+}
+
+.lr-assistant-panel {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 14px);
+  width: min(320px, calc(100vw - 48px));
+  background: var(--black);
+  color: var(--white);
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(23, 23, 23, .28);
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transform-origin: bottom left;
+  pointer-events: none;
+  transition:
+    opacity .32s ease,
+    transform .32s ease,
+    visibility 0s linear .32s;
+}
+
+.lr-assistant-panel.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+  transition:
+    opacity .32s ease,
+    transform .32s ease,
+    visibility 0s linear 0s;
+}
+
+.lr-assistant-panel[hidden] {
+  display: none;
+}
+
+.lr-assistant-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.lr-assistant-avatar {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: rgba(217, 138, 22, .18);
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.lr-assistant-avatar svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+.lr-assistant-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.lr-assistant-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.lr-assistant-subtitle {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, .62);
+}
+
+.lr-assistant-close {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(255, 255, 255, .72);
+  cursor: pointer;
+}
+
+.lr-assistant-close svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+.lr-assistant-close:hover {
+  background: rgba(255, 255, 255, .08);
+  color: var(--white);
+}
+
+.lr-assistant-body {
+  padding: 14px 16px 16px;
+}
+
+.lr-assistant-message {
+  margin: 0 0 14px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, .9);
+}
+
+.lr-assistant-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lr-assistant-btn {
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--white);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lr-assistant-btn:hover {
+  background: rgba(255, 255, 255, .08);
+}
+
+.lr-assistant-btn--primary {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--white);
+}
+
+.lr-assistant-btn--primary:hover {
+  background: var(--gold-dark);
+  border-color: var(--gold-dark);
+}
+
+.lr-assistant-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.lr-assistant-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  margin-top: 14px;
+  font-size: 14px;
+}
+
+.lr-assistant-links a,
+.lr-assistant-link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--gold);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.lr-assistant-dismiss {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgba(255, 255, 255, .48);
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lr-assistant-dismiss:hover {
+  color: rgba(255, 255, 255, .72);
+}
+
+@keyframes lr-assistant-pulse {
+  0%, 100% { transform: translateY(0); box-shadow: 0 8px 18px rgba(23, 23, 23, .22); }
+  50% { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(217, 138, 22, .34); }
+}
+
 .noscript-note {
   position: fixed;
   inset: auto 0 0 0;
@@ -1692,20 +2014,36 @@ h2 {
   .nav-toggle-bars::after,
   .whatsapp-float,
   .back-to-top,
+  .lr-assistant-toggle,
   .field input,
   .field select,
   .field textarea {
     transition: none;
   }
 
+  .button-arrow { transition: none; }
+
   .button:hover,
+  .button-stacked:hover .button-arrow,
   .header-whatsapp:hover,
   .whatsapp-float:hover,
   .back-to-top:hover,
+  .lr-assistant-toggle:hover,
   .page-back:hover,
   .solutions-back-link,
   .solutions-back-link:hover {
     transform: none;
+  }
+
+  .lr-assistant.is-attention .lr-assistant-toggle {
+    animation: none;
+  }
+
+  .lr-assistant-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: none;
   }
 }
 
@@ -1902,6 +2240,25 @@ h2 {
     width: 42px;
     height: 42px;
   }
+
+  .lr-assistant {
+    left: 12px;
+    bottom: 16px;
+  }
+
+  .lr-assistant-toggle {
+    width: 52px;
+    height: 52px;
+  }
+
+  .lr-assistant-toggle svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .lr-assistant-panel {
+    width: min(320px, calc(100vw - 24px));
+  }
 }
 
 /* A palavra da marca nunca quebra: ela cede tamanho e tracking para o
@@ -1915,6 +2272,7 @@ h2 {
 
 @media (max-width: 480px) {
   .actions .button { width: 100%; text-align: center; }
+  .actions .button-stacked { align-items: center; }
 
   /* Em celulares não cabem marca + botão + menu na mesma linha. O WhatsApp
      continua sempre acessível pelo botão flutuante e pelo item "Orçamento"
