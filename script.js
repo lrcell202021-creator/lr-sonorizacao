@@ -832,9 +832,7 @@ function buildAssistantMarkup() {
 
   return `
     <div class="lr-assistant" id="lrAssistant">
-      <audio class="lr-assistant-audio" id="lrAssistantAudio" preload="metadata">
-        <source src="${ASSISTANT_AUDIO_SRC}" type="audio/mpeg">
-      </audio>
+      <audio class="lr-assistant-audio" id="lrAssistantAudio" preload="none"></audio>
 
       <div
         class="lr-assistant-panel"
@@ -945,32 +943,30 @@ function initSoundAssistant() {
   let resumeListenerAttached = false;
   let autoMinimizeTimer = 0;
   let panelCloseTimer = 0;
-  let audioBlobUrl = "";
-  let audioBlobRequested = false;
+  let audioSourcePromise = null;
 
   // O Firebase Hosting entrega o MP3 comprimido (br/gzip), e resposta
-  // comprimida nao aceita pedido por faixa de bytes. O Chrome do Android
-  // busca midia por faixas e para a trilha no meio. Baixar o arquivo inteiro
-  // e tocar de um blob local elimina os pedidos por faixa.
-  function prefetchAudio() {
-    if (audioBlobRequested || !window.fetch || !window.URL) return;
-    audioBlobRequested = true;
-    fetch(ASSISTANT_AUDIO_SRC)
-      .then((response) => (response.ok ? response.blob() : Promise.reject()))
-      .then((blob) => {
-        audioBlobUrl = URL.createObjectURL(blob);
-        useAudioBlob();
-      })
-      .catch(() => {
-        audioBlobRequested = false;
-      });
-  }
+  // comprimida nao aceita pedido por faixa de bytes. O player busca midia por
+  // faixas e parava a trilha no meio. Por isso o <audio> so recebe a trilha ja
+  // baixada inteira, num blob local; o endereco do servidor e so o plano B,
+  // se o download falhar.
+  function loadAudioSource() {
+    if (!audioSourcePromise) {
+      const download =
+        window.fetch && window.URL
+          ? fetch(ASSISTANT_AUDIO_SRC, { cache: "force-cache" })
+              .then((response) => (response.ok ? response.blob() : Promise.reject()))
+              .then((blob) => URL.createObjectURL(blob))
+          : Promise.reject();
 
-  // Trocar a fonte reinicia a trilha: so troca parada no inicio ou no fim.
-  function useAudioBlob() {
-    if (!audioBlobUrl || audio.src === audioBlobUrl || !audio.paused) return;
-    if (audio.currentTime > 0 && !audio.ended) return;
-    audio.src = audioBlobUrl;
+      audioSourcePromise = download
+        .catch(() => ASSISTANT_AUDIO_SRC)
+        .then((src) => {
+          audio.src = src;
+          return src;
+        });
+    }
+    return audioSourcePromise;
   }
 
   const prefersReducedMotion = window.matchMedia(
@@ -1010,7 +1006,7 @@ function initSoundAssistant() {
     toggle.setAttribute("aria-expanded", "true");
     root.classList.add("is-open");
     setMessage(isPlaying ? "playing" : audioReady ? null : "error");
-    prefetchAudio();
+    loadAudioSource();
 
     if (prefersReducedMotion) {
       panel.classList.add("is-visible");
@@ -1053,7 +1049,7 @@ function initSoundAssistant() {
   function attachResumeOnInteraction() {
     if (resumeListenerAttached || assistantPref() !== "on") return;
     resumeListenerAttached = true;
-    prefetchAudio();
+    loadAudioSource();
 
     const resume = () => {
       if (assistantPref() !== "on" || isPlaying || !audioReady) return;
@@ -1075,7 +1071,17 @@ function initSoundAssistant() {
     }
 
     try {
-      useAudioBlob();
+      if (!audio.getAttribute("src")) {
+        const label = playBtn.textContent;
+        playBtn.textContent = "Carregando…";
+        playBtn.disabled = true;
+        try {
+          await loadAudioSource();
+        } finally {
+          playBtn.textContent = label;
+          playBtn.disabled = false;
+        }
+      }
       if (audio.ended || audio.currentTime >= (audio.duration || 0)) {
         audio.currentTime = 0;
       }
@@ -1180,6 +1186,11 @@ function initSoundAssistant() {
 
   syncControls();
   setMessage(null);
+
+  // Baixa a trilha com a pagina ja pronta, para o "Ouvir" nao ter espera.
+  const startDownload = () => window.setTimeout(loadAudioSource, 1200);
+  if (document.readyState === "complete") startDownload();
+  else window.addEventListener("load", startDownload, { once: true });
 
   if (assistantPref() === "on" && audioReady) {
     attachResumeOnInteraction();
