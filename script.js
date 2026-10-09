@@ -757,7 +757,7 @@ function initQuoteForm() {
 // tocam como 16 bits, o que vira ruido branco.
 const ASSISTANT_AUDIO_SRC = "assets/vinheta-lr.mp3?v=1";
 const ASSISTANT_VOLUME = 0.28;
-const ASSISTANT_PANEL_TRANSITION_MS = 320;
+const ASSISTANT_PANEL_TRANSITION_MS = 700;
 const ASSISTANT_STORAGE = {
   audio: "lr-assistant-audio",
   dismissed: "lr-assistant-dismissed",
@@ -798,7 +798,7 @@ function setAssistantDismissed() {
 
 function getAssistantMessage(state) {
   if (state === "playing") {
-    return "Trilha ativa. Aproveite a navegação — estou por aqui se quiser pausar ou silenciar.";
+    return "Trilha ativa. Aproveite a navegação — estou por aqui se quiser silenciar.";
   }
   if (state === "finished") {
     return "Trilha finalizada. Se quiser ouvir novamente, toque em ouvir essa mensagem.";
@@ -847,6 +847,7 @@ function buildAssistantMarkup() {
           <div class="lr-assistant-avatar" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M12 3a4 4 0 0 0-4 4v6a4 4 0 0 0 8 0V7a4 4 0 0 0-4-4zm-6 8a6 6 0 0 0 12 0h2a8 8 0 0 1-7 7.93V22h-2v-3.07A8 8 0 0 1 4 11h2z"/>
+              <path class="lr-assistant-slash" d="M4 3l17 18"/>
             </svg>
           </div>
           <div class="lr-assistant-heading">
@@ -867,17 +868,18 @@ function buildAssistantMarkup() {
             <button type="button" class="lr-assistant-btn lr-assistant-btn--primary" id="lrAssistantPlay">
               Ouvir essa mensagem
             </button>
-            <button type="button" class="lr-assistant-btn" id="lrAssistantPause" hidden>
-              Pausar
-            </button>
             <button type="button" class="lr-assistant-btn" id="lrAssistantMute" hidden>
               Silenciar
             </button>
           </div>
 
           <div class="lr-assistant-links">
-            <a href="${solutionsHref}" id="lrAssistantSolutions">Ver soluções</a>
-            <button type="button" class="lr-assistant-link-btn" id="lrAssistantWhatsApp">WhatsApp</button>
+            <a class="lr-assistant-btn lr-assistant-btn--primary" href="${solutionsHref}" id="lrAssistantSolutions">Ver soluções</a>
+            <button type="button" class="lr-assistant-whatsapp" id="lrAssistantWhatsApp" aria-label="Falar com a LR no WhatsApp">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38c1.45.79 3.08 1.2 4.79 1.2 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm5.8 14.05c-.24.68-1.4 1.31-1.93 1.36-.53.05-1.02.24-3.44-.71-2.92-1.15-4.75-4.17-4.9-4.37-.14-.19-1.15-1.53-1.15-2.92 0-1.39.73-2.07 1-2.36.26-.29.58-.36.77-.36.19 0 .39 0 .56.01.18.01.42-.07.65.5.24.58.82 2 .89 2.14.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.14-.3.3-.13.59.17.29.75 1.24 1.62 2.01 1.11.99 2.05 1.3 2.34 1.45.29.15.46.12.63-.07.17-.19.73-.85.93-1.15.19-.29.39-.24.65-.14.27.1 1.69.8 1.98.94.29.15.48.22.55.34.07.13.07.75-.17 1.43z"/>
+              </svg>
+            </button>
           </div>
 
           <button type="button" class="lr-assistant-dismiss" id="lrAssistantDismiss">
@@ -896,6 +898,7 @@ function buildAssistantMarkup() {
       >
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <path d="M12 3a4 4 0 0 0-4 4v6a4 4 0 0 0 8 0V7a4 4 0 0 0-4-4zm-6 8a6 6 0 0 0 12 0h2a8 8 0 0 1-7 7.93V22h-2v-3.07A8 8 0 0 1 4 11h2z"/>
+          <path class="lr-assistant-slash" d="M4 3l17 18"/>
         </svg>
         <span class="lr-assistant-badge" id="lrAssistantBadge" hidden aria-hidden="true"></span>
       </button>
@@ -914,7 +917,6 @@ function initSoundAssistant() {
   const closeBtn = document.getElementById("lrAssistantClose");
   const messageEl = document.getElementById("lrAssistantMessage");
   const playBtn = document.getElementById("lrAssistantPlay");
-  const pauseBtn = document.getElementById("lrAssistantPause");
   const muteBtn = document.getElementById("lrAssistantMute");
   const dismissBtn = document.getElementById("lrAssistantDismiss");
   const whatsappBtn = document.getElementById("lrAssistantWhatsApp");
@@ -927,7 +929,6 @@ function initSoundAssistant() {
     !toggle ||
     !messageEl ||
     !playBtn ||
-    !pauseBtn ||
     !muteBtn ||
     !audio
   ) {
@@ -979,7 +980,6 @@ function initSoundAssistant() {
 
   function syncControls() {
     playBtn.hidden = isPlaying;
-    pauseBtn.hidden = !isPlaying;
     muteBtn.hidden = !isPlaying && !isMuted;
 
     if (isPlaying) {
@@ -1008,16 +1008,10 @@ function initSoundAssistant() {
     setMessage(isPlaying ? "playing" : audioReady ? null : "error");
     loadAudioSource();
 
-    if (prefersReducedMotion) {
-      panel.classList.add("is-visible");
-      return;
-    }
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        panel.classList.add("is-visible");
-      });
-    });
+    // Força o navegador a aplicar o estado oculto antes de trocar a classe,
+    // senão a transição de entrada não acontece.
+    void panel.offsetWidth;
+    panel.classList.add("is-visible");
   }
 
   function closePanel() {
@@ -1030,13 +1024,11 @@ function initSoundAssistant() {
     toggle.setAttribute("aria-expanded", "false");
     root.classList.remove("is-open");
 
-    const transitionMs = prefersReducedMotion ? 0 : ASSISTANT_PANEL_TRANSITION_MS;
-
     window.clearTimeout(panelCloseTimer);
     panelCloseTimer = window.setTimeout(() => {
       panel.classList.remove("is-closing");
       panel.hidden = true;
-    }, transitionMs);
+    }, ASSISTANT_PANEL_TRANSITION_MS);
   }
 
   function scheduleAutoMinimize() {
@@ -1123,7 +1115,6 @@ function initSoundAssistant() {
     playAudio();
   });
 
-  pauseBtn.addEventListener("click", pauseAudio);
   muteBtn.addEventListener("click", toggleMute);
 
   dismissBtn?.addEventListener("click", () => {
@@ -1150,7 +1141,6 @@ function initSoundAssistant() {
   audio.addEventListener("error", () => {
     audioReady = false;
     playBtn.disabled = true;
-    pauseBtn.hidden = true;
     muteBtn.hidden = true;
     setMessage("error");
   });
